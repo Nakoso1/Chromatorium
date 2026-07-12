@@ -1,0 +1,189 @@
+:root{
+ --bg:#17181b;--bg1:#1e2024;--bg2:#26282e;--bg3:#2f3238;
+ --bd:#3a3d45;--bd2:#4a4e58;--tx:#d8dae0;--tx2:#9a9eab;--tx3:#6e7280;
+ --ac:#5aa8e0;--ac2:#3d7ab0;--warn:#e0a35a;--ok:#6ec48a;
+ --hdrH:48px;--panelW:392px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font:13px/1.5 "Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",system-ui,sans-serif;user-select:none}
+button{background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-radius:4px;padding:4px 10px;font:inherit;cursor:pointer}
+button:hover{border-color:var(--bd2);background:#363a41}
+button.on{background:var(--ac2);border-color:var(--ac);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number]{background:var(--bg1);color:var(--tx);border:1px solid var(--bd);border-radius:4px;padding:3px 6px;font:inherit}
+input[type=number]{width:64px}
+input[type=range]{-webkit-appearance:none;height:18px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--bd);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--ac);margin-top:-4px;border:none}
+input[type=range]::-moz-range-track{height:4px;background:var(--bd);border-radius:2px}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--ac);border:none}
+/* WS-05: HSB⇔RGB比較ウィジェット専用。JSがCSS変数--gtrackへlinear-gradientを都度セットし、
+   このクラスが付いたスライダーだけトラック色をそのグラデーションに差し替える
+   (無指定時は既存スライダーと同じ--bd色にフォールバックし、他スライダーに影響しない)。 */
+input[type=range].gradTrack::-webkit-slider-runnable-track{background:var(--gtrack,var(--bd))}
+input[type=range].gradTrack::-moz-range-track{background:var(--gtrack,var(--bd))}
+input[type=checkbox]{accent-color:var(--ac)}
+label{cursor:pointer}
+/* ===== header ===== */
+#topbar{height:var(--hdrH);display:flex;align-items:center;gap:10px;padding:0 10px;background:var(--bg1);border-bottom:1px solid var(--bd);white-space:nowrap;overflow-x:auto;overflow-y:hidden}
+#topbar .sep{width:1px;height:26px;background:var(--bd);flex:none}
+#topbar .grp{display:flex;align-items:center;gap:6px;flex:none}
+#topbar .lbl{color:var(--tx2);font-size:11px}
+#topbar input[type=range]{width:96px}
+#fname{max-width:160px;overflow:hidden;text-overflow:ellipsis;color:var(--tx2);font-size:11px}
+.icobtn{display:inline-flex;align-items:center;gap:5px}
+.icobtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#savePop{position:absolute;top:calc(var(--hdrH) + 2px);left:8px;z-index:60;background:var(--bg2);border:1px solid var(--bd2);border-radius:6px;padding:10px;display:none;flex-direction:column;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+#flipPop{position:absolute;top:calc(var(--hdrH) + 2px);z-index:60;background:var(--bg2);border:1px solid var(--bd2);border-radius:6px;padding:8px;display:none;flex-direction:column;gap:6px;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+#flipPop.show{display:flex}
+#savePop.show{display:flex}
+#radiusWrap{display:flex;align-items:center;gap:4px}
+.num{color:var(--ac);font-variant-numeric:tabular-nums;min-width:2.5em;display:inline-block;text-align:right;font-size:11px}
+/* ===== main ===== */
+#main{display:flex;height:calc(100% - var(--hdrH))}
+#stage{flex:1;position:relative;overflow:hidden;background:#101114}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+#gl.pick{cursor:crosshair}
+#gl.hand{cursor:grab}
+#gl.handing{cursor:grabbing}
+#overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#mkPreviewCv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;opacity:0.5;mix-blend-mode:normal}
+#mkPreviewCv.show{display:block}
+#drophint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--tx3);font-size:15px;pointer-events:none}
+#drophint.hidden{display:none}
+#dropglow{position:absolute;inset:0;border:2px dashed var(--ac);background:rgba(90,168,224,.08);display:none;pointer-events:none;z-index:50}
+#dropglow.show{display:block}
+/* 5点変化テーブル ドック */
+#dock{position:absolute;right:8px;bottom:8px;background:rgba(30,32,36,.94);border:1px solid var(--bd2);border-radius:6px;padding:6px 8px;display:none;max-width:460px;font-size:11px;z-index:40}
+#dock.show{display:block}
+#dock table{border-collapse:collapse;font-variant-numeric:tabular-nums}
+#dock th{color:var(--tx2);font-weight:normal;padding:1px 7px;text-align:left;border-bottom:1px solid var(--bd)}
+#dock td{padding:1px 7px}
+#dock .anch{color:var(--warn)}
+.ndot{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;border:1px solid rgba(255,255,255,.5)}
+/* ===== right panel ===== */
+#panel{width:var(--panelW);flex:none;background:var(--bg1);border-left:1px solid var(--bd);display:flex;flex-direction:column}
+#tabsWrap{display:flex;align-items:stretch;border-bottom:1px solid var(--bd);flex:none}
+#tabs{display:flex;flex:1;min-width:0}
+#btnLang{flex:none;border:none;border-radius:0;background:transparent;color:var(--tx2);padding:0 12px;font-size:11px;letter-spacing:.03em}
+#btnLang:hover{background:var(--bg2);color:var(--tx)}
+#tabs button{flex:1;border:none;border-radius:0;background:transparent;color:var(--tx2);padding:9px 0;border-bottom:2px solid transparent}
+#tabs button:hover{background:var(--bg2)}
+#tabs button.on{color:var(--tx);border-bottom-color:var(--ac);background:transparent}
+#tabbody{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 24px}
+.tabpage{display:none}
+.tabpage.on{display:block}
+details.sec{border-bottom:1px solid var(--bd)}
+details.sec>summary{list-style:none;padding:8px 12px;cursor:pointer;color:var(--tx);font-weight:600;display:flex;align-items:center;gap:6px}
+details.sec>summary::before{content:"▸";color:var(--tx3);font-size:10px;transition:transform .1s}
+details.sec[open]>summary::before{transform:rotate(90deg)}
+details.sec>summary:hover{background:var(--bg2)}
+.secbody{padding:4px 12px 12px}
+.row{display:flex;align-items:center;gap:8px;margin:5px 0;flex-wrap:wrap}
+.row .lbl{color:var(--tx2);min-width:74px;font-size:12px;flex:none}
+.row input[type=range]{flex:1;min-width:80px}
+.hint{color:var(--tx3);font-size:11px;margin:3px 0}
+.sw{display:inline-block;width:26px;height:26px;border-radius:4px;border:1px solid var(--bd2);vertical-align:middle}
+.swS{width:16px;height:16px}
+.swL{width:44px;height:44px}
+canvas.wheel{background:transparent;touch-action:none}
+#m3dCanvas{cursor:grab;touch-action:none}
+#m3dCanvas.grabbing{cursor:grabbing}
+#m3dModal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;display:none;align-items:center;justify-content:center}
+#m3dModal.show{display:flex}
+#m3dModal .box{background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;padding:14px;width:min(84vw,900px);max-height:88vh;display:flex;flex-direction:column;gap:8px}
+#m3dModal .box .hd{display:flex;align-items:center;justify-content:space-between}
+#m3dModal .box .hd b{font-weight:600}
+#m3dModalBody #m3dWrap{display:block !important}
+#m3dModalBody #m3dCanvas{width:100%;height:min(64vh,640px)}
+.confirmModal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:210;display:none;align-items:center;justify-content:center}
+.confirmModal.show{display:flex}
+.confirmModal .box{background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;padding:18px;max-width:380px}
+.confirmModal .box .row{justify-content:flex-end;margin-top:14px}
+.confirmModal .box b{color:var(--warn)}
+/* F5: リセットは不可逆化したため危険色で視覚化 */
+#btnResetAll{border-color:var(--warn);color:var(--warn)}
+#btnResetAll:hover{background:var(--warn);color:#1a1400}
+/* ===== F1: ショートカット一覧モーダル (m3dModalと同一パターン) ===== */
+#shortcutModal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;display:none;align-items:center;justify-content:center}
+#shortcutModal.show{display:flex}
+#shortcutModal .box{background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;padding:14px;width:min(84vw,520px);max-height:82vh;display:flex;flex-direction:column;gap:8px}
+#shortcutModal .box .hd{display:flex;align-items:center;justify-content:space-between}
+#shortcutModal .box .hd b{font-weight:600}
+#shortcutModalBody{overflow-y:auto}
+#shortcutModalBody table{width:100%;border-collapse:collapse;font-size:12px}
+#shortcutModalBody td{padding:4px 6px;border-bottom:1px solid var(--bg2)}
+#shortcutModalBody td:first-child{color:var(--tx2)}
+#shortcutModalBody kbd{background:var(--bg3);border:1px solid var(--bd2);border-radius:3px;padding:1px 6px;font:inherit;font-variant-numeric:tabular-nums}
+/* ===== F4: ヘルプマーク & ポップオーバー ===== */
+.hpMark{width:15px;height:15px;min-width:15px;border-radius:50%;font-size:10px;line-height:1;padding:0;
+ display:inline-flex;align-items:center;justify-content:center;color:var(--tx3);background:transparent;
+ border:1px solid var(--tx3);margin-left:5px;flex:none;cursor:pointer}
+.hpMark:hover,.hpMark:focus{color:#fff;border-color:var(--ac);background:var(--ac2)}
+#hpPop{position:fixed;z-index:220;width:266px;background:var(--bg2);border:1px solid var(--bd2);border-radius:6px;
+ padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none;font-size:12px;line-height:1.55}
+#hpPop.show{display:block}
+#hpPop .hpT{font-weight:600;margin-bottom:4px;color:var(--tx);font-size:13px}
+#hpPop .hpS{color:var(--ac);font-size:10.5px;margin-top:7px;font-weight:600}
+/* ===== F2: トリミングモード ===== */
+#tab-crop{display:none;padding:4px 12px 12px}
+#tab-crop.on{display:block}
+.cropRow{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap}
+.cropRow .lbl{color:var(--tx2);min-width:60px;font-size:12px}
+#tab-crop input[type=number]{width:70px}
+#tabs button:disabled{opacity:.35;cursor:default}
+/* ===== F3: 補助線設定行のcolor input ===== */
+#gdColor{width:32px;height:24px;padding:1px;border:1px solid var(--bd);border-radius:4px;background:var(--bg1)}
+#gdGridNRow{display:none}
+#gdGridNRow.show{display:flex}
+table.kv{border-collapse:collapse;font-variant-numeric:tabular-nums;width:100%}
+table.kv td{padding:2px 6px;border-bottom:1px solid var(--bg2)}
+table.kv td:first-child{color:var(--tx2);width:56px}
+#status{flex:none;border-top:1px solid var(--bd);padding:4px 10px;font-size:11px;color:var(--tx3);min-height:24px}
+#status.busy{color:var(--warn)}
+.pigrow{display:grid;grid-template-columns:26px 1fr auto;gap:6px;align-items:center;margin:4px 0}
+.pigrow .chn{color:var(--tx2);font-weight:600}
+.palitem{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--bg2)}
+.palitem .nm{flex:1;overflow:hidden;text-overflow:ellipsis}
+/* §VI-4: パレットスウォッチ = 選択(クリック)/削除(×バッジ)/コピー(⧉バッジ)を分離したUI。
+   バッジはホバー非依存で常時表示し(タッチ環境考慮)、誤爆防止のため15px角(≥14px)を確保する。 */
+.palSwWrap{position:relative;display:inline-block;width:26px;height:26px;margin:3px 8px 3px 2px}
+.palSwWrap .sw{width:26px;height:26px}
+.palSwWrap.selected .sw{outline:2px solid var(--ac);outline-offset:2px}
+.palSwDel,.palSwCopy{position:absolute;width:15px;height:15px;line-height:13px;padding:0;
+ font-size:10px;border-radius:50%;background:#1a1b1e;border:1px solid var(--bd2);color:#fff;cursor:pointer}
+.palSwDel{top:-7px;right:-7px}
+.palSwCopy{bottom:-7px;right:-7px;font-size:9px}
+.palSwDel:hover{background:var(--warn);border-color:var(--warn)}
+.palSwCopy:hover{background:var(--ac);border-color:var(--ac)}
+.palitem .sw.selected,.palitem .sw.swS.selected{outline:2px solid var(--ac);outline-offset:1px}
+.palNameEdit{flex:1;background:var(--bg2);border:1px solid var(--ac);border-radius:3px;color:var(--tx);padding:1px 4px;font-size:inherit}
+.mini{padding:2px 7px;font-size:11px}
+.schsw{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--tx2);width:64px}
+#scOut{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.tickcv{display:block;width:100%;height:14px;margin-top:-6px}
+.stepsWrap{width:100%}
+.stepsWrap input[type=range]{width:100%;display:block}
+.mgRow{display:flex;width:100%;height:28px;border-radius:4px;overflow:hidden;border:1px solid var(--bd2);margin:2px 0}
+.mgSw{flex:1;cursor:pointer;position:relative}
+.mgSw.best{outline:2px solid #fff;outline-offset:-2px;z-index:1}
+.diagcv{width:100%;border:1px solid var(--bd);border-radius:4px;background:#000}
+.subtoggle{display:flex;gap:0;border:1px solid var(--bd);border-radius:5px;overflow:hidden}
+.subtoggle button{border:none;border-radius:0;flex:1}
+.warn{color:var(--warn)}
+.okc{color:var(--ok)}
+#dlgSize{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100}
+#dlgSize.show{display:flex}
+#dlgSize .box{background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;padding:18px;max-width:380px}
+#dlgSize .box .row{justify-content:flex-end;margin-top:14px}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:5px}
+::-webkit-scrollbar-track{background:transparent}
+/* WS-09: 混色スケール「レシピ欄へ」転記時、遷移先(#rcOut)を一時的にハイライトして
+   接続先が視覚的にわかるようにする(受け取った側が「今ここが変わった」と気づけること)。 */
+@keyframes ws09FlashHighlight{
+ 0%{background:rgba(120,170,255,.35)}
+ 100%{background:transparent}
+}
+.ws09-flash{animation:ws09FlashHighlight 1.4s ease-out}

@@ -1,0 +1,595 @@
+</style>
+</head>
+<body>
+<header id="topbar">
+ <div class="grp">
+  <button id="btnOpen" class="icobtn" data-i18n-title="toolbar.openTitle" title="画像を開く (Ctrl+O)"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M4 17v3h16v-3"/></svg><span data-i18n="toolbar.open">開く</span></button>
+  <button id="btnSave" class="icobtn" disabled data-i18n-title="toolbar.saveTitle" title="書き出しポップを開く (Ctrl+S)"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg><span data-i18n="toolbar.save">保存</span></button>
+  <span id="fname"></span>
+ </div>
+ <div class="sep"></div>
+ <div class="grp">
+  <button id="btnUndo" class="icobtn" data-i18n-title="toolbar.undoTitle" title="元に戻す (Ctrl+Z)" disabled><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-2"/></svg><span data-i18n="toolbar.undo">戻る</span></button>
+  <button id="btnRedo" class="icobtn" data-i18n-title="toolbar.redoTitle" title="やり直し (Ctrl+Y / Ctrl+Shift+Z)" disabled><svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 000 12h2"/></svg><span data-i18n="toolbar.redo">進む</span></button>
+  <button id="btnResetAll" class="icobtn" data-i18n-title="toolbar.resetAllTitle" title="すべての変更を初期状態に戻す"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/></svg><span data-i18n="toolbar.resetAll">変更をリセット</span></button>
+ </div>
+ <div class="sep"></div>
+ <div class="grp" data-help="brightsat"><span class="lbl" data-i18n="ui.topbarBrightness">明度</span><input type="range" id="slBright" min="-1" max="1" step="0.005" value="0" data-i18n-title="ui.clarityDblClickReset" title="ダブルクリックでリセット"><span class="num" id="vBright">0</span></div>
+ <div class="grp"><span class="lbl" data-i18n="ui.topbarSaturation">彩度</span><input type="range" id="slSat" min="-1" max="1" step="0.005" value="0" data-i18n-title="ui.clarityDblClickReset" title="ダブルクリックでリセット"><span class="num" id="vSat">0</span></div>
+ <div class="sep"></div>
+ <div class="grp">
+  <button id="modePick" class="icobtn on" data-i18n-title="toolbar.modePickTitle" title="ピクセル選択モード"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span data-i18n="toolbar.modePick">ドット</span></button>
+  <button id="modeHand" class="icobtn" data-i18n-title="toolbar.modeHandTitle" title="握る(パン/ズーム)モード — Space長押しでも一時切替"><svg viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 013 0V12m0-6.5v-1a1.5 1.5 0 013 0V12m0-5.5a1.5 1.5 0 013 0V14"/><path d="M17 12.5a1.5 1.5 0 013 .5v2a7 7 0 01-7 7h-2a7 7 0 01-6-3.5L3 14a1.7 1.7 0 013-1.5l2 2.5"/></svg><span data-i18n="toolbar.modeHand">握る</span></button>
+  <span id="radiusWrap"><span class="lbl" data-i18n="ui.topbarRadius">半径</span><input type="range" id="slRadius" min="0" max="32" step="1" value="2" style="width:70px"><span class="num" id="vRadius">2</span></span>
+ </div>
+ <div class="sep"></div>
+ <div class="grp" data-help="split">
+  <button id="btnHold" data-i18n="topbar.original" data-i18n-title="topbar.originalTitle" title="クリックで元画像表示を固定/解除します（Qキー / \キーの長押しでも一時的に表示できます）">元画像</button>
+  <button id="btnSplit" data-i18n="ui.splitCompare" data-i18n-title="ui.splitCompareTitle" title="Before/After 分割比較（線をドラッグで移動）">比較分割</button>
+  <!-- §II-5/6: 完全可逆・Undo可能な操作のため回転は確認なしで即時実行。反転はポップオーバーで軸を選ぶ。 -->
+  <button id="btnRotate" class="icobtn" data-i18n-title="orient.rotateTitle" title="時計回りに90°回転（即時実行）"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/></svg><span data-i18n="orient.rotate">回転</span></button>
+  <button id="btnFlip" class="icobtn" data-i18n-title="orient.flipTitle" title="画像を反転"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 7l-4 5 4 5M17 7l4 5-4 5"/></svg><span data-i18n="orient.flip">反転</span></button>
+  <button id="btnCrop" class="icobtn" data-i18n-title="toolbar.cropTitle" title="トリミング開始/確定 (C / Enter)"><svg viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 002 2h14"/><path d="M18 22V8a2 2 0 00-2-2H2"/></svg><span data-i18n="toolbar.crop">トリミング</span></button>
+  <button id="btnGuides" class="icobtn" data-i18n-title="toolbar.guidesTitle" title="補助線 表示/非表示 (G)"><svg viewBox="0 0 24 24"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg><span data-i18n="toolbar.guides">補助線</span></button>
+ </div>
+</header>
+<div id="savePop">
+ <div class="row"><span class="lbl" data-i18n="ui.exportFileName">ファイル名</span><input type="text" id="expName" style="width:180px"></div>
+ <div class="row"><span class="lbl" data-i18n="ui.exportFormat">形式</span><select id="expFmt"><option value="png">PNG</option><option value="jpeg" data-i18n="ui.exportFormatJpeg">JPEG (品質92)</option></select></div>
+ <div class="row" style="justify-content:flex-end"><button id="expGo" class="on" data-i18n="ui.exportGoBtn">画像を書き出し</button></div>
+ <div class="hint" id="expGamutWarn" style="display:none;color:var(--warn)" data-i18n="ui.exportGamutWarnInline">⚠ ガマット表示/補正が書き出しに含まれます</div>
+ <div class="hint" data-i18n="ui.exportOverlayHint">補助表示(マーカー等)は含まれません</div>
+</div>
+<!-- §II-5/6: savePopと同型・同スタイルの小ポップオーバー。位置はbtnFlipの実際のbounding rectから
+     JSで動的に設定する(savePopのようなツールバー先頭固定オフセットが使えないため)。 -->
+<div id="flipPop">
+ <div class="row"><button id="flipHBtn" class="mini" data-i18n="orient.flipH">横方向に反転</button></div>
+ <div class="row"><button id="flipVBtn" class="mini" data-i18n="orient.flipV">縦方向に反転</button></div>
+</div>
+<div id="main">
+ <div id="stage">
+  <canvas id="gl" class="pick"></canvas>
+  <canvas id="mkPreviewCv"></canvas>
+  <svg id="overlay"></svg>
+  <div id="drophint">
+   <svg width="46" height="46" viewBox="0 0 24 24" style="stroke:#5a5e6a;fill:none;stroke-width:1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg>
+   <div><span data-i18n="ui.dropHintMain">画像をドラッグ&ドロップ、または「開く」から読み込み</span><br><span style="font-size:12px;color:#565a66" data-i18n="ui.dropHintSub">JPEG / PNG / WebP / GIF / BMP（Space:パン　Q:元画像比較）</span></div>
+  </div>
+  <div id="dropglow"></div>
+  <div id="dock">
+   <table><thead><tr><th data-i18n="ui.dockRepresentative">代表</th><th></th><th data-i18n="ui.dockPoint">点</th><th>Δh°</th><th>ΔC</th><th>ΔL</th><th data-i18n="ui.dockRgbBefore">RGB(前)</th><th data-i18n="ui.dockRgbAfter">RGB(後)</th><th></th></tr></thead><tbody id="dockBody"></tbody></table>
+  </div>
+ </div>
+ <aside id="panel">
+  <div id="tabsWrap">
+   <nav id="tabs">
+    <button data-tab="analyze" class="on" data-i18n="tabs.analyze">解析</button>
+    <button data-tab="value" data-i18n="tabs.value">明度</button>
+    <button data-tab="mixing" data-i18n="tabs.mixing">混色</button>
+    <button data-tab="scheme" data-i18n="tabs.scheme">配色</button>
+    <button data-tab="gamut" data-i18n="tabs.gamut">ガマット</button>
+   </nav>
+   <button id="btnLang" data-i18n-title="lang.title" title="表示言語の切替（JA/EN）">EN</button>
+  </div>
+  <div id="tabbody">
+
+  <!-- ============ 解析タブ ============ -->
+  <div class="tabpage on" id="tab-analyze">
+   <details class="sec"><summary data-help="guides" data-i18n="sections.guides">補助線</summary><div class="secbody">
+    <div class="row"><label><input type="checkbox" id="gdOn"> <span data-i18n="ui.guidesAlwaysShow">常時表示する（Gキーでも切替）</span></label></div>
+    <div class="row"><span class="lbl" data-i18n="ui.guidesType">種類</span><select id="gdType">
+      <option value="thirds" data-i18n="ui.guidesTypeThirds">三分割</option><option value="golden" data-i18n="ui.guidesTypeGolden">黄金比</option>
+      <option value="goldenSpiral" data-i18n="ui.guidesTypeGoldenSpiral">黄金螺旋</option><option value="diag" data-i18n="ui.guidesTypeDiag">対角線</option>
+      <option value="center" data-i18n="ui.guidesTypeCenter">中心十字</option><option value="grid" data-i18n="ui.guidesTypeGrid">グリッド</option>
+     </select>
+     <button id="gdSpiralDir" class="mini" style="display:none" data-i18n-title="guides.spiralDirTitle" title="黄金螺旋の向きを切替（8方位）">↻</button></div>
+    <div class="row" id="gdGridNRow"><span class="lbl" data-i18n="ui.guidesGridN">分割数</span><input type="range" id="gdGridN" min="2" max="10" step="1" value="4"><span class="num" id="vgdGridN">4</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.guidesColor">色</span><input type="color" id="gdColor" value="#ffffff">
+     <span class="lbl" data-i18n="ui.guidesWidth">線幅</span><input type="range" id="gdWidth" min="0.5" max="3" step="0.1" value="1" style="width:70px"><span class="num" id="vgdWidth">1.0</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.guidesOpacity">不透明度</span><input type="range" id="gdOpacity" min="0.1" max="1" step="0.05" value="0.8"><span class="num" id="vgdOpacity">80%</span></div>
+    <div class="hint" data-i18n="ui.guidesHint">構図確認のための目安線です。画像には一切焼き込まれません。三分割・黄金比は経験則としての構図ヒューリスティクスです。</div>
+   </div></details>
+   <details class="sec" open><summary data-help="pick" data-i18n="sections.pick">ピクセル選択・数値</summary><div class="secbody">
+    <div class="row"><span class="sw swL" id="numSwatch"></span><div><div id="numSrc" class="hint" data-i18n="ui.pickClickHint">画像上をクリックして色を選択</div><div id="numPos" class="hint"></div></div></div>
+    <table class="kv" id="numTable">
+     <tr><td>RGB</td><td id="nvRGB">—</td><td><button id="nvRGBCopy" class="mini" style="padding:1px 6px;font-size:9px" data-i18n-title="ui.pickCopyHex" title="カラーコードをコピー" aria-label="カラーコードをコピー">⧉</button></td></tr>
+     <tr><td>HSL</td><td id="nvHSL">—</td></tr>
+     <tr><td>HSV</td><td id="nvHSV">—</td></tr>
+     <tr><td>Lab</td><td id="nvLab">—</td></tr>
+     <tr><td>OkLCh</td><td id="nvOk">—</td></tr>
+    </table>
+   </div></details>
+   <details class="sec" open><summary data-i18n="sections.wheelCompare">色相環 3種比較</summary><div class="secbody">
+    <!-- WS-04: 表示モードを最上部の明確な2択トグルへ変更。単体表示(既定)=1環を大きく、
+         3種同時比較=3環を最初から横並び同期表示(標準書指定の新機能=アンカーティック・
+         角度差Δ数値表示を全てこのモード内でアクティブにする)。重ね合わせビューは
+         3種比較モード内の任意サブビュー(既定OFF)として存置する(標準書 §(c))。 -->
+    <div class="row"><div class="subtoggle" style="flex:1">
+     <button id="wheelModeSingle" class="on" data-i18n="ui.wheelModeSingle">単体表示</button>
+     <button id="wheelModeCompare" data-i18n="ui.wheelModeCompare">3種同時比較</button>
+    </div></div>
+
+    <div id="wheelSingleModeWrap">
+     <div class="row"><select id="wheelSel"><option value="rgb" data-i18n="ui.wheelOptRgb">オリジナル色相環 (RGB)</option><option value="ryb" data-i18n="ui.wheelOptRyb">RYB 伝統色相環</option><option value="munsell" data-i18n="ui.wheelOptMunsell">マンセル色相環</option></select></div>
+     <div id="wheelSingleWrap" style="text-align:center"><canvas id="wheelSingle" class="wheel" width="336" height="336"></canvas></div>
+     <!-- WS-16 S2: 単体表示のドラッグ結果(スライドした色)の数値表示+コピー。
+          画像編集パイプラインには一切接続しない(状態はstate.analysis._wheelProbe、揮発)。 -->
+     <div id="wheelProbeOut" style="display:none">
+      <div class="row">
+       <span class="sw swL" id="wpSwatch"></span>
+       <div style="flex:1">
+        <div class="hint" id="wpAngle">—</div>
+        <div class="hint" id="wpMunsell">—</div>
+       </div>
+      </div>
+      <table class="kv" id="wpTable">
+       <tr><td>HEX</td><td id="wpHex">—</td>
+           <td><button id="wpCopyHex" class="mini" style="padding:1px 6px;font-size:9px" data-i18n-title="ui.pickCopyHex" title="カラーコードをコピー" aria-label="カラーコードをコピー">⧉</button></td></tr>
+       <tr><td>RGB</td><td id="wpRGB">—</td>
+           <td><button id="wpCopyAll" class="mini" style="padding:1px 6px;font-size:9px" data-i18n-title="wheel.probeCopyAllTitle" title="すべての数値をコピー" aria-label="すべての数値をコピー">⧉</button></td></tr>
+       <tr><td>HSV</td><td id="wpHSV">—</td><td></td></tr>
+       <tr><td>OkLCh</td><td id="wpOk">—</td><td></td></tr>
+      </table>
+      <div class="hint" data-i18n="wheel.probeHint">環の上をドラッグすると、その位置の色をここに表示します（画像の編集には影響しません）</div>
+     </div>
+    </div>
+
+    <div id="wheelCompareModeWrap" style="display:none">
+     <div class="row">
+      <label><input type="checkbox" id="wheelAnchorTicks" checked> <span data-i18n="ui.wheelAnchorTicks">共通アンカーティック</span></label>
+      <button id="wheelRotReset" class="mini" data-i18n="wheel.rotReset" data-i18n-title="wheel.rotResetTitle" title="ドラッグで生じた表示回転をすべて0へ戻します" style="margin-left:auto">回転をリセット</button>
+     </div>
+     <div id="wheelTriple" style="display:flex;gap:6px;justify-content:center">
+      <div style="text-align:center;flex:1"><canvas class="wheel" id="wT0" width="118" height="118"></canvas><div class="hint">RGB</div><div class="hint" id="wT0Angle" style="font-size:10px">—</div></div>
+      <div style="text-align:center;flex:1"><canvas class="wheel" id="wT1" width="118" height="118"></canvas><div class="hint">RYB</div><div class="hint" id="wT1Angle" style="font-size:10px">—</div></div>
+      <div style="text-align:center;flex:1"><canvas class="wheel" id="wT2" width="118" height="118"></canvas><div class="hint" data-i18n="ui.wheelOptMunsellShort">マンセル</div><div class="hint" id="wT2Angle" style="font-size:10px">—</div></div>
+     </div>
+     <div class="hint" data-i18n="wheel.dragHint">いずれかの環をドラッグすると、掴んだ瞬間に3環のマーカーが同じ角度へそろい(キャリブレーション)、以後は動かした量の差から系ごとの角度スケールの違いを比較できます。</div>
+     <div class="row"><label><input type="checkbox" id="wheelShowOverlay"> <span data-i18n="ui.wheelShowOverlay">重ね合わせビューも表示</span></label></div>
+     <div id="wheelOverWrap" style="display:none;text-align:center"><canvas class="wheel" id="wOver" width="260" height="260"></canvas>
+      <div class="hint" data-i18n="ui.wheelOverlayHint">内周:RGB / 中周:RYB / 外周:Munsell — 同一色の角度ズレを観察</div></div>
+    </div>
+   </div></details>
+   <!-- WS-05: HSB⇔RGB比較(新規)。画像編集パイプラインには一切接続しない純UI教育ウィジェット
+        (state非接触・揮発)。同じ色を2つのモデルで同時に見て、スライダー1本の変化が他方で
+        どう表れるかを体感させる。 -->
+   <details class="sec"><summary data-i18n="sections.hsbRgbCompare">HSB ⇔ RGB 比較</summary><div class="secbody">
+    <div class="row"><span class="sw swL" id="cmpSwatch"></span><span class="hint" id="cmpHex" style="flex:1">#e65a1a</span>
+     <button id="cmpFromPick" class="mini" data-i18n="ui.cmpTakePick">選択色を取込</button></div>
+    <div class="hint" style="font-weight:600" data-i18n="ui.cmpHsbHeader">HSB（色相・彩度・明度）</div>
+    <div class="row"><span class="lbl">H</span><input type="range" class="gradTrack" id="cmpH" min="0" max="360" step="1" value="30"><span class="num" id="vCmpH">30°</span></div>
+    <div class="row"><span class="lbl">S</span><input type="range" class="gradTrack" id="cmpS" min="0" max="100" step="1" value="80"><span class="num" id="vCmpS">80%</span></div>
+    <div class="row"><span class="lbl">B</span><input type="range" class="gradTrack" id="cmpB" min="0" max="100" step="1" value="90"><span class="num" id="vCmpB">90%</span></div>
+    <div class="hint" style="font-weight:600" data-i18n="ui.cmpRgbHeader">RGB（赤・緑・青）</div>
+    <div class="row"><span class="lbl">R</span><input type="range" class="gradTrack" id="cmpR" min="0" max="255" step="1" value="230"><span class="num" id="vCmpR">230</span></div>
+    <div class="row"><span class="lbl">G</span><input type="range" class="gradTrack" id="cmpG" min="0" max="255" step="1" value="101"><span class="num" id="vCmpG">101</span></div>
+    <div class="row"><span class="lbl">B</span><input type="range" class="gradTrack" id="cmpBl" min="0" max="255" step="1" value="26"><span class="num" id="vCmpBl">26</span></div>
+    <div class="hint" id="cmpChangeHint">—</div>
+    <div class="hint" data-i18n="ui.cmpHint">各トラックの背景は「他の値を固定してその成分だけを掃引したグラデーション」です。トラックの色の変化そのものが、その成分を動かしたときに実際にどう色が変わるかを表します。</div>
+   </div></details>
+   <details class="sec" open><summary data-help="munsell" data-i18n="sections.munsell">マンセル HVC・色立体</summary><div class="secbody">
+    <div class="row"><span class="sw" id="mSwatch"></span><span id="mHVC" class="hint" style="flex:1">—</span></div>
+    <!-- §III-3: H/V/C行はパネルとポップアップで同一DOMを共有し移設する(m3dWrapと同じ移設方式)。
+         二重実装・二重同期を避けるため、要素はここに1つだけ存在する。 -->
+    <div id="mHVCWrap">
+     <div class="row"><span class="lbl">Hue</span><input type="range" id="mH" min="0" max="100" step="0.25" value="0"><span class="num" id="vmH" style="min-width:3.2em">—</span></div>
+     <div class="row"><span class="lbl">Value</span><input type="range" id="mV" min="0.5" max="9.8" step="0.05" value="5"><span class="num" id="vmV">—</span></div>
+     <div class="row"><span class="lbl">Chroma</span><input type="range" id="mC" min="0" max="30" step="0.1" value="0"><span class="num" id="vmC">—</span>
+      <button id="mCMode" class="mini" data-i18n-title="ui.munsellModeToggleTitle" title="絶対値/％切替" data-i18n="ui.munsellModeAbs">絶対値</button></div>
+     <div class="hint" id="mCmaxLabel">限界Chroma: —</div>
+    </div>
+    <div class="hint" data-i18n="ui.munsellApproxNote">※ Oklab内部計算によるマンセル近似値 (sRGB境界クリップ)</div>
+    <div class="row"><button id="m3dOpen" class="mini" data-i18n="ui.munsellExpand3d">3D色立体を展開</button></div>
+    <div id="m3dWrap" style="display:none">
+     <canvas id="m3dCanvas" width="360" height="300" style="width:100%;border:1px solid var(--bd);border-radius:4px;background:#0c0d10"></canvas>
+     <div class="hint" data-i18n="ui.munsellDragHint3d">ドラッグで自由回転 / ホイールでズーム</div>
+     <!-- §III-3: 「立体回転」「拡大」スライダはドラッグ/ホイールと完全重複のため撤去(state.munsell.rot/scaleと
+          描画コードは不変、入力手段を減らすだけ)。id="m3dDensityRow"はポップアップ側でH/V/C行を
+          この直前へ挿入するための目印。 -->
+     <div class="row" id="m3dDensityRow"><span class="lbl" data-i18n="ui.munsellDensity">濃さ</span><input type="range" id="m3dDensity" min="0.05" max="0.95" step="0.01" value="0.28"><span class="num" id="vm3dDensity">0.28</span></div>
+     <div class="row"><button id="m3dReset" class="mini" data-i18n="ui.munsellResetView">表示をリセット</button><button id="m3dPopup" class="mini" data-i18n="ui.munsellPopupShow">ポップアップ表示</button></div>
+    </div>
+   </div></details>
+   <details class="sec" open><summary data-help="hist" data-i18n="sections.hist">バリュー / ヒストグラム</summary><div class="secbody">
+    <div class="row"><div class="subtoggle"><button id="histLum" class="on" data-i18n="ui.histLum">輝度</button><button id="histRGB">RGB</button></div>
+     <div class="subtoggle" id="histChRow" style="display:none;flex:0 0 auto">
+      <button id="histChR" class="on" data-i18n-title="hist.channelR" title="赤(R)チャンネルの表示切替">R</button>
+      <button id="histChG" class="on" data-i18n-title="hist.channelG" title="緑(G)チャンネルの表示切替">G</button>
+      <button id="histChB" class="on" data-i18n-title="hist.channelB" title="青(B)チャンネルの表示切替">B</button>
+     </div>
+     <span class="hint" id="histSrc"></span></div>
+    <canvas id="histCanvas" width="360" height="110" style="width:100%;background:#101114;border:1px solid var(--bd);border-radius:4px"></canvas>
+   </div></details>
+   <details class="sec"><summary data-help="cvd" data-i18n="sections.cvd">色覚多様性シミュレーション</summary><div class="secbody">
+    <div class="row"><select id="cvdSel"><option value="none" data-i18n="ui.cvdNone">なし</option><option value="protan" data-i18n="ui.cvdProtan">P型 (Protanopia)</option><option value="deutan" data-i18n="ui.cvdDeutan">D型 (Deuteranopia)</option><option value="tritan" data-i18n="ui.cvdTritan">T型 (Tritanopia)</option></select></div>
+    <canvas id="cvdCanvas" class="diagcv"></canvas>
+   </div></details>
+   <details class="sec"><summary data-i18n="sections.kmeans">主要色抽出・減色パレット</summary><div class="secbody">
+    <div class="row"><span class="lbl" data-i18n="ui.kmeansCount">色数</span><input type="range" id="kmK" min="4" max="16" step="1" value="8"><span class="num" id="vkmK">8</span><button id="kmGo" class="mini" data-i18n="ui.kmeansExtract">抽出</button></div>
+    <!-- §III-5: クリック数原則により追加は1本のみ。面積シェア順ではなく知覚的主要度で並べ替える。 -->
+    <div class="row"><span class="lbl" data-i18n="ui.kmeansBalance">並び</span><input type="range" id="kmBalance" min="0" max="1" step="0.01" value="0.5"><span class="num" id="vkmBalance" data-i18n="ui.kmeansBalanceMid">バランス</span></div>
+    <div class="hint" data-i18n="ui.kmeansHint">左=面積(画面を占める広さ)重視、右=鮮やかさ(顕著性)重視で主要色の順序を並べ替えます。既定はバランス。</div>
+    <div id="kmOut" class="row"></div>
+    <div class="row"><button id="kmToPal" class="mini" disabled data-i18n="ui.kmeansSendToPalette">パレットへ送る</button></div>
+   </div></details>
+  </div>
+
+  <!-- ============ トリミング(一時タブ・F2) ============
+       #tabs には現れない一時ページ。Crop.enter()/exit() が .on を直接切り替える。 -->
+  <div id="tab-crop">
+   <div class="row" data-help="crop"><b style="flex:1" data-i18n="ui.cropLabel">トリミング</b></div>
+   <div class="cropRow"><span class="lbl" data-i18n="ui.cropRatio">縦横比</span>
+    <select id="crRatio">
+     <option value="free" data-i18n="ui.cropRatioFree">自由</option><option value="orig" data-i18n="ui.cropRatioOrig">元画像</option>
+     <option value="1:1">1:1</option><option value="4:3">4:3</option><option value="3:2">3:2</option><option value="16:9">16:9</option>
+     <option value="custom" data-i18n="ui.cropRatioCustom">カスタム</option>
+    </select>
+    <input type="number" id="crRW" value="1" min="0.1" step="0.1" style="width:52px;display:none">
+    <button id="crRatioFlip" class="mini" data-i18n-title="ui.cropFlipTitle" title="縦横入替" style="display:none">⇄</button>
+    <input type="number" id="crRH" value="1" min="0.1" step="0.1" style="width:52px;display:none">
+   </div>
+   <div class="cropRow"><span class="lbl">X</span><input type="number" id="crX" value="0" min="0">
+    <span class="lbl">Y</span><input type="number" id="crY" value="0" min="0"></div>
+   <div class="cropRow"><span class="lbl" data-i18n="ui.cropWidth">幅</span><input type="number" id="crW" value="0" min="16">
+    <span class="lbl" data-i18n="ui.cropHeight">高さ</span><input type="number" id="crH" value="0" min="16"></div>
+   <div class="cropRow"><span class="lbl" data-i18n="ui.cropGuides">補助線</span>
+    <select id="crGuide">
+     <option value="none" data-i18n="ui.cvdNone">なし</option><option value="thirds" data-i18n="ui.guidesTypeThirds">三分割</option><option value="golden" data-i18n="ui.guidesTypeGolden">黄金比</option>
+     <option value="goldenSpiral" data-i18n="ui.guidesTypeGoldenSpiral">黄金螺旋</option><option value="diag" data-i18n="ui.guidesTypeDiag">対角線</option><option value="center" data-i18n="ui.guidesTypeCenter">中心十字</option>
+    </select>
+    <button id="crGuideDir" class="mini" style="display:none" data-i18n-title="guides.spiralDirTitle" title="黄金螺旋の向きを切替（8方位）">↻</button>
+   </div>
+   <div class="row" style="justify-content:flex-end">
+    <button id="crCancel" data-i18n="ui.cropCancel">キャンセル (Esc)</button><button id="crCommit" class="on" data-i18n="ui.cropCommit">完了 (Enter)</button>
+   </div>
+   <div class="row" id="crUncropRow" style="display:none">
+    <button id="crUncrop" class="mini" data-i18n="ui.cropUncrop">元の全体に戻す</button>
+   </div>
+   <div class="hint" data-i18n="ui.cropHint">ドラッグで移動/リサイズ。ハンドルは見た目より大きい範囲でつかめます。整数px境界での切り出しのため画質劣化はありません。</div>
+  </div>
+
+  <!-- ============ 明度タブ ============ -->
+  <div class="tabpage" id="tab-value">
+   <details class="sec"><summary data-help="mask" data-i18n="sections.mask">部分適用マスク</summary><div class="secbody">
+    <!-- WS-06: 「何ができるのかユーザーに伝わらない」問題への対応として、機能を
+         「①どこに効かせる→②何を効かせる→③確認する」の3ステップへ再編する。
+         内部の計算モデル(trap/hue/geoのAND、フェザー、反転)は一切変更しない。 -->
+    <!-- Fix2(部分適用マスクの直感性改善): 実機テストで判明した4つの問題への対応。
+         (a)「選択色から設定」ボタンは事前にstate.analysis.pick(画像上でのクリック選択)が
+             無いと機能しないが、ボタン単体からはその前提条件が全く読み取れず「クリックしても
+             選択できない」という報告に直結していた。→ 常時表示のヒント文を追加し、
+             ボタン自体も前提が満たされるまでdisabledにする(syncMaskPickButtons参照)。
+         (b) 旧実装は「詳細調整を表示」チェックボックスの裏に明度範囲・色相範囲の
+             有効化チェックボックス自体を隠していた。ONにする方法が発見できなければ
+             使えないのは当然のため、このゲートを廃止し常時表示にする。
+         (c) 形状は「なし/矩形/なげなわを選ぶ→別の『範囲を描く』ボタンを押す→
+             キャンバス上でドラッグする」という3段階の間接操作になっており、
+             「そもそも矩形やなげなわの選択ができない」という報告につながっていた。
+             →「矩形で指定」1クリックで即座に描画を開始する方式へ統合する。
+         (d) なげなわは自由曲線を辿る操作自体が本質的に難度が高く、「操作も難しい」との
+             報告どおりのため、直感性を優先し撤去する(ユーザー指示「機能を絞ることも
+             視野にいれよ」に基づく判断)。データモデル側(computeGeoStage等の共有処理)は
+             一切変更せず、UIの入口のみを外す(低リスク)。
+         (e)「範囲の取り消しボタンが存在しない」との報告に対応し、「範囲を解除」を
+             明確な独立ボタンとして常時表示する(既存のクリア処理を流用、ラベルのみ明確化)。 -->
+    <div class="hint" data-i18n="ui.maskIntro">画像の一部（明るさの帯・特定の色み・囲った範囲）にだけ、このタブの他の操作を試せます。</div>
+    <div class="row"><label><input type="checkbox" id="mkOn"> <span data-i18n="ui.maskEnable">マスクを有効化</span></label>
+     <label style="margin-left:auto"><input type="checkbox" id="mkInvert"> <span data-i18n="ui.maskInvert">反転</span></label></div>
+
+    <div class="hint" style="font-weight:600" data-i18n="ui.maskStep1">① どこに効かせるか</div>
+    <div class="row" style="flex-wrap:wrap;gap:4px">
+     <button id="mkQuickShadow" class="mini" data-i18n="ui.maskQuickShadow">シャドウ</button>
+     <button id="mkQuickMid" class="mini" data-i18n="ui.maskQuickMid">中間調</button>
+     <button id="mkQuickHigh" class="mini" data-i18n="ui.maskQuickHigh">ハイライト</button>
+    </div>
+
+    <div class="row"><label><input type="checkbox" id="mkLumOn"> <span data-i18n="ui.maskLumOn">明度範囲</span></label>
+     <button id="mkLumPick" class="mini" style="margin-left:auto" data-i18n="ui.maskPickFromColorLum">選択色の明るさ</button></div>
+    <div class="row"><span class="lbl" data-i18n="ui.maskLo">下限</span><input type="range" id="mkLumLo" min="0" max="1" step="0.005" value="0"><span class="num" id="vmkLumLo">0.00</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.maskHi">上限</span><input type="range" id="mkLumHi" min="0" max="1" step="0.005" value="1"><span class="num" id="vmkLumHi">1.00</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.maskSoftShoulder">肩(ソフト)</span><input type="range" id="mkLumSoft" min="0.005" max="0.3" step="0.005" value="0.08"><span class="num" id="vmkLumSoft">0.08</span></div>
+
+    <div class="row"><label><input type="checkbox" id="mkHueOn"> <span data-i18n="ui.maskHueOn">色相範囲</span></label>
+     <button id="mkHuePick" class="mini" style="margin-left:auto" data-i18n="ui.maskPickFromColorHue">選択色の色み</button></div>
+    <div class="row"><span class="lbl" data-i18n="ui.maskHueCenter">中心</span><input type="range" id="mkHueCenter" min="0" max="360" step="1" value="30"><span class="num" id="vmkHueCenter">30°</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.maskHueWidth">幅</span><input type="range" id="mkHueWidth" min="1" max="360" step="1" value="60"><span class="num" id="vmkHueWidth">60°</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.maskSoftShoulder">肩(ソフト)</span><input type="range" id="mkHueSoft" min="1" max="90" step="1" value="20"><span class="num" id="vmkHueSoft">20°</span></div>
+
+    <div class="hint" data-i18n="ui.maskPickHint">「選択色の明るさ/色み」は、先に画像上をクリックして色を選ぶと使えるようになります。</div>
+
+    <div class="row"><span class="lbl" data-i18n="ui.maskShape">範囲(形状)</span>
+     <button id="mkShapeRect" class="mini" data-i18n="ui.maskShapeRectBtn">矩形で指定</button>
+     <button id="mkShapeClear" class="mini" data-i18n="ui.maskShapeClearBtn" disabled>範囲を解除</button>
+    </div>
+    <div class="hint" data-i18n="ui.maskShapeHint">「矩形で指定」を押してから、画像上をドラッグすると範囲が決まります。</div>
+
+    <div class="row"><span class="lbl" data-i18n="ui.maskFeather">フェザー</span><input type="range" id="mkFeather" min="0" max="0.3" step="0.005" value="0.05"><span class="num" id="vmkFeather">0.05</span></div>
+
+    <div class="hint" style="font-weight:600" data-i18n="ui.maskStep2">② 何を効かせるか</div>
+    <div class="row" style="flex-wrap:wrap;gap:2px 12px">
+     <label><input type="checkbox" id="mkTgtWarp" checked> <span data-i18n="ui.maskTgtWarp">環境光</span></label>
+     <label><input type="checkbox" id="mkTgtNight" checked> <span data-i18n="ui.maskTgtNight">夜目</span></label>
+     <label><input type="checkbox" id="mkTgtBs" checked> <span data-i18n="ui.maskTgtBs">明度・彩度</span></label>
+     <label><input type="checkbox" id="mkTgtCmp" checked> <span data-i18n="ui.maskTgtCmp">圧縮</span></label>
+     <label><input type="checkbox" id="mkTgtLev" checked> <span data-i18n="ui.maskTgtLev">レベル</span></label>
+     <label><input type="checkbox" id="mkTgtPost" checked> <span data-i18n="ui.maskTgtPost">階調</span></label>
+    </div>
+
+    <!-- WS-16 S3-4: 「どこに効かせるか」の設定内容を1行で要約表示する。
+         押したのに何が起きたか分からない状態を防ぐ(WS-16 V-2)。 -->
+    <div class="hint" id="mkSummary"></div>
+
+    <div class="hint" style="font-weight:600" data-i18n="ui.maskStep3">③ 確認する</div>
+    <!-- WS-06: 「押している間だけ表示」(pointerdown/up)はマウスを持続的にクリックさせ続ける
+         不快な操作だったため、クリックでON/OFFが切り替わるトグルボタンへ変更する。 -->
+    <div class="row"><button id="mkShowMask" class="mini" data-i18n="ui.maskShowToggle">マスク範囲を表示</button></div>
+    <div class="hint" data-i18n="ui.maskHint">明度・色相・矩形の積(AND)で適用範囲が決まります。境界は必ずフェザーで滑らかにしてください(急峻な境界は偽の輪郭が見えることがあります)。マスク境界は縮小版(最大1024px)で計算した近似です。</div>
+   </div></details>
+   <details class="sec" open><summary data-help="gray" data-i18n="sections.valueTransform">バリュー変換</summary><div class="secbody">
+    <div class="row"><label><input type="checkbox" id="vGray"> <span data-i18n="ui.grayscale">グレースケール表示（バリューのみ）</span></label></div>
+   </div></details>
+   <!-- WS-07: 階調制限はバリュー変換と組み合わせて使うことで真価を発揮する(ノータン学習等)。
+        併用を1アクションで行えるよう、①並びをバリュー変換の直後へ移動、②このセクション内にも
+        グレースケール確認チェック(既存vGrayのミラー、単一の真実はstate.value.gray/vGray側のまま)、
+        ③2値/3値/4値のノータン用プリセットボタンを追加する。 -->
+   <details class="sec" open><summary data-help="steps" data-i18n="sections.steps">階調制限</summary><div class="secbody">
+    <div class="row"><label><input type="checkbox" id="vPostOn"> <span data-i18n="ui.stepsEnable">階調制限を有効化</span></label>
+     <label style="margin-left:auto"><input type="checkbox" id="vDither"> <span data-i18n="ui.stepsDither">ディザ</span></label></div>
+    <div class="hint" data-i18n="value.ditherHint">低い段階数では、ざらつき(ディザ)が段の境界の視認を妨げるため既定オフです。</div>
+    <div class="row"><label><input type="checkbox" id="vGrayMirror"> <span data-i18n="ui.grayscaleMirror">グレースケールで確認（明度タブ上部と連動）</span></label></div>
+    <div class="row"><span class="lbl" data-i18n="ui.stepsCount">段階数</span><span class="num" id="vvSteps">4</span></div>
+    <div class="row" style="gap:4px">
+     <button id="stepsPreset2" class="mini" data-i18n="ui.stepsPreset2">2値</button>
+     <button id="stepsPreset3" class="mini" data-i18n="ui.stepsPreset3">3値</button>
+     <button id="stepsPreset4" class="mini" data-i18n="ui.stepsPreset4">4値</button>
+    </div>
+    <div class="stepsWrap" id="vStepsWrap">
+     <input type="range" id="vSteps" min="0" max="1" step="0.0005" value="0.32">
+     <canvas id="vStepsTicks" class="tickcv" height="14"></canvas>
+    </div>
+    <div class="hint" data-i18n="ui.stepsHint">対数目盛: 低段階数(2〜8)ほど細かく操作できます。目盛りをクリックすると主要な段階数へスナップします</div>
+    <div class="hint" data-i18n="ui.stepsGrayHint">バリュー(明度)構造の学習には、グレースケール表示と併用してください。段の境界だけを純粋に確認できます。</div>
+   </div></details>
+   <details class="sec" open><summary data-help="cmp" data-i18n="sections.cmp">バリュー幅の圧縮・淡彩化</summary><div class="secbody">
+    <div class="row"><span class="lbl" data-i18n="ui.cmpAmount">圧縮量</span><input type="range" id="vCmp" min="0" max="1" step="0.005" value="0"><span class="num" id="vvCmp">0%</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.cmpCenter">中心明度</span><input type="range" id="vPivot" min="0" max="1" step="0.005" value="0.6"><span class="num" id="vvPivot">0.60</span></div>
+   </div></details>
+   <details class="sec"><summary data-help="clarity" data-i18n="sections.clarity">明瞭度</summary><div class="secbody">
+    <div class="row"><span class="lbl" data-i18n="ui.clarityLabel">明瞭度</span><input type="range" id="clAmt" min="-1" max="1" step="0.005" value="0" data-i18n-title="ui.clarityDblClickReset" title="ダブルクリックでリセット"><span class="num" id="vclAmt">0.00</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.clarityRadius">細部↔大づかみ</span><input type="range" id="clRad" min="0" max="1" step="0.005" value="0.5"><span class="num" id="vclRad">0.50</span></div>
+    <div class="hint" data-i18n="ui.clarityHint">中間周波数の局所コントラストを増減します(正=くっきり、負=柔らかく)。全体の明るさ・コントラストは変えません。</div>
+   </div></details>
+   <details class="sec" open><summary data-help="lev" data-i18n="sections.levels">白飛び・黒つぶれ調整</summary><div class="secbody">
+    <div class="row"><span class="lbl" data-i18n="ui.levInBlack">入力 黒</span><input type="range" id="lBi" min="0" max="0.98" step="0.005" value="0"><span class="num" id="vlBi">0</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.levInWhite">入力 白</span><input type="range" id="lWi" min="0.02" max="1" step="0.005" value="1"><span class="num" id="vlWi">1</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.levOutBlack">出力 黒</span><input type="range" id="lBo" min="0" max="1" step="0.005" value="0"><span class="num" id="vlBo">0</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.levOutWhite">出力 白</span><input type="range" id="lWo" min="0" max="1" step="0.005" value="1"><span class="num" id="vlWo">1</span></div>
+   </div></details>
+   <details class="sec"><summary data-i18n="sections.diagnostics">診断: グリザイユ / 局所コントラスト</summary><div class="secbody">
+    <div class="row"><button id="diagGo" class="mini" data-i18n="ui.diagUpdate">診断を更新</button></div>
+    <div class="hint" data-i18n="ui.diagGrisHint">グリザイユ下塗りプレビュー（現在の階調設定を反映）</div>
+    <canvas id="diagGris" class="diagcv"></canvas>
+    <div class="hint" data-i18n="ui.diagCtrHint">局所コントラスト・ヒートマップ（明=コントラスト強）</div>
+    <canvas id="diagCtr" class="diagcv"></canvas>
+   </div></details>
+  </div>
+
+  <!-- ============ 混色タブ ============ -->
+  <div class="tabpage" id="tab-mixing">
+   <details class="sec" open><summary data-help="mixing" data-i18n="sections.juxtaposeMixing">並置混色シミュレーション</summary><div class="secbody">
+    <div class="row"><label><input type="checkbox" id="mxOn"> <span data-i18n="ui.simEnable">シミュレーションを有効化</span></label></div>
+    <div class="row"><div class="subtoggle" style="flex:1"><button id="mxModeA" class="on" data-i18n="ui.mixModeA">A: 空間的並置(油彩/点描)</button><button id="mxModeB" data-i18n="ui.mixModeB">B: 積層(デジタル)</button></div></div>
+    <div class="row"><span class="lbl" data-i18n="ui.mixSystem">系統</span><div class="subtoggle" style="flex:1"><button id="sysCMYK" class="on" data-i18n="ui.mixSysCMYK">CMYK系</button><button id="sysRGB" data-i18n="ui.mixSysRGB">RGB系</button><button id="sysCUSTOM" data-i18n="ui.mixSysCustom">カスタム</button></div></div>
+    <div class="row"><button id="presetMonet" class="mini" data-i18n="ui.mixPresetMonet">印象派(モネ)プリセットを適用</button></div>
+    <div class="row" data-help="ideal"><label><input type="checkbox" id="mxIdeal"> <span data-i18n="ui.mixIdealMode">理想値モード（CMY/RGB理論値）</span></label></div>
+    <div id="pigRowsCustomCtl" class="row" style="display:none">
+     <span class="lbl" data-i18n="ui.mixColorCount">色数</span><button id="pigDelSlot" class="mini" data-i18n="ui.mixSlotDec">− 減らす</button><span class="num" id="pigSlotCount">6色</span><button id="pigAddSlot" class="mini" data-i18n="ui.mixSlotInc">＋ 増やす</button>
+    </div>
+    <div id="pigRows"></div>
+    <div class="row"><input type="color" id="cpColor" value="#8a5a2a" data-i18n-title="ui.mixTargetColorTitle" title="目標マスストーン色"><input type="text" id="cpName" data-i18n-ph="ui.mixPigNamePh" placeholder="カスタム顔料名" style="flex:1"><button id="cpAdd" class="mini" data-i18n="ui.mixAddPigment">顔料追加</button></div>
+    <div id="swapOut" class="hint"></div>
+    <div class="row"><input type="text" id="presetName" data-i18n-ph="ui.mixPresetNamePh" placeholder="プリセット名" style="flex:1"><button id="presetSave" class="mini" data-i18n="ui.mixSave">保存</button></div>
+    <div class="row"><select id="presetSel" style="flex:1"></select><button id="presetLoad" class="mini" data-i18n="ui.mixLoad">呼出</button><button id="presetDel" class="mini" data-i18n="ui.mixDelete">削除</button></div>
+    <div id="mxRowsA">
+     <div class="row"><span class="lbl" data-i18n="ui.mixDotSize">点描サイズ</span><input type="range" id="mxDot" min="0.75" max="100" step="0.05" value="4"><span class="num" id="vmxDot">4.0px</span></div>
+     <div class="row"><span class="lbl" data-i18n="ui.mixBrush">筆触</span><div class="subtoggle" style="flex:1"><button id="stDot" class="on" data-i18n="ui.mixStDot">点描</button><button id="stHatch" data-i18n="ui.mixStHatch">細線ハッチング</button></div></div>
+     <div class="row"><span class="lbl" data-i18n="ui.mixViewDist">鑑賞距離</span><input type="range" id="mxDist" min="0" max="1" step="0.005" value="0"><span class="num" id="vmxDist">0</span></div>
+    </div>
+    <div id="mxRowsB" style="display:none">
+     <div class="row"><span class="lbl" data-i18n="ui.mixKmCmp">KM比較</span><select id="mxKmCmp"><option value="0" data-i18n="ui.mixKmCmpLayerOnly">積層合成のみ</option><option value="2" data-i18n="ui.mixKmCmpSplit">分割表示 (左:積層 / 右:KM理想)</option><option value="1" data-i18n="ui.mixKmCmpKmOnly">KM減法混色のみ</option></select></div>
+     <div class="hint" data-i18n="ui.mixKmCmpHint">左右比較でデジタル重ね塗りとパレット混色(KM)の濁り/発色差を観察</div>
+    </div>
+    <div class="row" style="margin-top:8px"><span class="lbl" style="min-width:0" data-i18n="ui.mixCompareLabel">選択色の比較:</span></div>
+    <div id="cmpPanel" class="hint" data-i18n="ui.mixCmpPanelDefault">画像上で色を選択すると 実顔料/理想値 の混色結果とΔE00を表示</div>
+   </div></details>
+   <details class="sec" open id="secHue"><summary data-help="warp" data-i18n="sections.ambientLight">環境光シミュレーション</summary><div class="secbody">
+    <div class="row"><label><input type="checkbox" id="hueOn"> <span data-i18n="ui.simEnable">シミュレーションを有効化</span></label>
+     <button id="hueClear" class="mini" style="margin-left:auto" data-i18n="ui.hueClear">全点クリア</button></div>
+    <div class="row"><div class="subtoggle" style="flex:1">
+     <button id="hwModeRef" data-i18n="ui.hwModeRef">A: 代表点から光源を逆算</button>
+     <button id="hwModeLight" class="on" data-i18n="ui.hwModeLight">B: 光源RGBを直接操作</button></div></div>
+    <div class="hint" id="hueHint" data-i18n="ui.hueHint">画像上をクリックで最大5点のプローブを登録。光のRGBバランスを操作すると、全プローブの色が円盤上で 元→後 の矢印として表示されます</div>
+    <div id="hueWheelWrap" style="text-align:center"><canvas id="hueWheel" class="wheel" width="252" height="252"></canvas></div>
+    <div id="hwRowsLight">
+     <div class="row"><span class="lbl" data-i18n="ui.lightR">光のR</span><input type="range" id="lightR" min="0.005" max="1" step="0.005" value="1"><span class="num" id="vlightR">1.000</span></div>
+     <div class="row"><span class="lbl" data-i18n="ui.lightG">光のG</span><input type="range" id="lightG" min="0.005" max="1" step="0.005" value="1"><span class="num" id="vlightG">1.000</span></div>
+     <div class="row"><span class="lbl" data-i18n="ui.lightB">光のB</span><input type="range" id="lightB" min="0.005" max="1" step="0.005" value="1"><span class="num" id="vlightB">1.000</span></div>
+    </div>
+    <div id="hwRowsRef" style="display:none">
+     <div class="row hint" id="refInfo" data-i18n="ui.refInfoUnset">代表点: 未設定(下の表の「代表」で指定)。ホイール上をドラッグして移動先の色を指定します</div>
+     <div class="row hint" id="refLightOut"></div>
+    </div>
+    <div class="row"><span class="lbl" data-i18n="ui.hueDensity">濃度</span><input type="range" id="hueDensity" min="0" max="1" step="0.01" value="0"><span class="num" id="vhueDensity">0%</span></div>
+    <div class="row"><label><input type="checkbox" id="hueAdapt" checked> <span data-i18n="ui.hueAdapt">露出補正(目の順応をシミュレート)</span></label></div>
+   </div></details>
+   <details class="sec"><summary data-help="night" data-i18n="sections.purkinje">プルキンエ現象シミュレーション</summary><div class="secbody">
+    <div class="row"><label><input type="checkbox" id="nightOn"> <span data-i18n="ui.simEnable">シミュレーションを有効化</span></label></div>
+    <div class="hint" data-i18n="ui.nightHint1">暗所ではL/M錐体(赤・緑)が反応を止め、桿体視へ移行する。桿体の感度ピークは約507nm(青緑)側へずれるため、ただ暗くなるのではなく赤が沈み青みが残る＝プルキンエ現象を再現します。</div>
+    <div class="row"><span class="lbl" data-i18n="ui.nightDarkness">暗さ(照度↓)</span><input type="range" id="nightLv" min="0" max="1" step="0.01" value="0"><span class="num" id="vnightLv">0%</span></div>
+    <div class="hint" data-i18n="ui.nightHint2">0%=昼光(明所視) → 100%=深夜(暗所視)。中間の薄明視で赤が先に暗くなり、全体が青灰へ desaturate します。</div>
+   </div></details>
+   <details class="sec"><summary data-help="mixscale" data-i18n="sections.mixscale">混色スケール練習</summary><div class="secbody">
+    <div class="row"><span class="lbl" data-i18n="ui.mgPigA">顔料A</span><select id="mgA" style="flex:1"></select></div>
+    <div class="row"><span class="lbl" data-i18n="ui.mgPigB">顔料B</span><select id="mgB" style="flex:1"></select></div>
+    <div class="row"><span class="lbl" data-i18n="ui.mgPigC">顔料C</span><select id="mgC" style="flex:1"><option value="" data-i18n="ui.mgPigNone">(なし)</option></select></div>
+    <!-- 付録B裁定(監督): §V-2の保留事項「mgFromAssignを3色化すべきか」に対し、Fable5監督が
+         3色化を許可(作業標準書 付録B)。押す前の見た目(3スウォッチ)と実際の結果(3色コピー)を
+         一致させ、予測可能性(I-1)を担保する。以前はids[0]→A, ids[1]→BのみでmgCに触れず
+         見た目と結果が食い違っていたが、この裁定によりids[2]→C(無ければ「(なし)」)まで
+         反映するよう修正した(WS-09と同時実施)。 -->
+    <div class="row" id="mgFromAssignRow">
+     <span class="sw swS" id="mgPvA" title="" style="visibility:hidden"></span><span class="sw swS" id="mgPvB" title="" style="visibility:hidden"></span><span class="sw swS" id="mgPvC" title="" style="visibility:hidden"></span>
+     <button id="mgFromAssign" class="mini" data-i18n="mixscale.fromAssign" data-i18n-title="mixscale.fromAssignTitle" title="上の並置混色シミュレーションで現在の系統に割り当てられている顔料（先頭3色）をA/B/Cへコピーします">混色シミュレーションの顔料を取込</button>
+    </div>
+    <div class="row"><span class="lbl" data-i18n="ui.mgSteps">段階数</span><div class="subtoggle" style="flex:1">
+      <button id="mgSteps5">5</button><button id="mgSteps7" class="on">7</button><button id="mgSteps9">9</button><button id="mgSteps11">11</button>
+     </div></div>
+    <div class="row"><label><input type="checkbox" id="mgTint"> <span data-i18n="ui.mgTintRow">各段に白を混ぜた列も表示</span></label></div>
+    <div id="mgBands"></div>
+    <div id="mgPickInfo" class="hint"></div>
+    <div class="row"><button id="mgToRecipe" class="mini" disabled data-i18n="ui.mgToRecipe">この配合をレシピ欄へ</button></div>
+    <div class="hint" data-i18n="ui.mgHint">絵具の物理混色(Kubelka–Munk)でmasstone→混合→tintの段階帯を生成します。実際の混色シミュレーションと同一の数式です。画像上で色を選択すると、最も近い段にΔE00でマーキングします。</div>
+   </div></details>
+  </div>
+
+  <!-- ============ 配色タブ ============ -->
+  <div class="tabpage" id="tab-scheme">
+   <details class="sec" open><summary data-help="scheme" data-i18n="sections.scheme">配色生成</summary><div class="secbody">
+    <!-- §VI-1: 「選択色を基準に」ボタンは即時反映化により冗長となったため撤去。
+         スウォッチ自体をクリック可能にし、隠したネイティブ<input type="color">で手動指定できるようにする。 -->
+    <div class="row"><span class="sw" id="scBase" style="position:relative;cursor:pointer" data-i18n-title="scheme.baseClickTitle" title="クリックして基準色を手動指定できます"><input type="color" id="scBaseInput" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none;padding:0" data-i18n-aria="ui.scBaseInputAria" aria-label="基準色を指定"></span>
+     <span class="hint" id="scBaseSrc" style="min-width:5.2em"></span>
+     <select id="scRule" style="flex:1"><option value="comp" data-i18n="ui.scRuleComp">反対色 (Complementary)</option><option value="split" data-i18n="ui.scRuleSplit">スプリット・コンプリメンタリー</option><option value="triad" data-i18n="ui.scRuleTriad">トライアド</option></select></div>
+    <div id="scOut"></div>
+    <div id="scRecipeOut" class="hint"></div>
+    <div class="hint" data-i18n="ui.scPigmentHint">各色の「顔料」ボタンで現在の顔料セットによる混合レシピを逆算</div>
+   </div></details>
+   <details class="sec" open><summary data-i18n="sections.schemeWheel">色相環（配色の関係）</summary><div class="secbody">
+    <div id="schWheelWrap" style="text-align:center"><canvas id="schWheel" class="wheel" width="252" height="252"></canvas></div>
+    <div class="row"><span class="lbl" data-i18n="ui.schWheelValue">バリュー</span><input type="range" id="scValue" min="0" max="1" step="0.005" value="0.5"><span class="num" id="vscValue">0.50</span></div>
+    <div class="row"><label><input type="checkbox" id="scDiscFollowL"> <span data-i18n="ui.schWheelDiscFollow">円盤の明るさも連動</span></label></div>
+    <div class="hint" data-i18n="ui.schWheelHint">中心=無彩色・外周=高彩度の円盤上で、基準色と生成色の位置関係を表示。反対色は中心を挟む直線、スプリットはV字、トライアドは三角形として関係を可視化します。点はドラッグでき、掴んだ点がポインタ角へ来るよう全体が一体で回転します(基準点は二重リング表示、半径ドラッグで彩度も変わります)。</div>
+   </div></details>
+   <details class="sec" id="secRecipe"><summary data-help="recipe" data-i18n="sections.recipe">顔料混合レシピ逆算</summary><div class="secbody">
+    <div class="row"><span class="sw" id="rcSwatch"></span><span class="hint" id="rcTargetSrc" style="flex:1" data-i18n="ui.rcTargetDefault">目標色 = 現在の選択色</span><button id="rcGo" class="mini" data-i18n="ui.rcCalcButton">レシピ計算</button></div>
+    <!-- WS-12: レシピ逆算の顔料元は既定で混色タブと連動するが、独立して選べるようにする。
+         切替は2値サブトグル(連動/このタブで選ぶ)。独立時のみチェックボックス一覧を表示する。 -->
+    <div class="row"><span class="lbl" data-i18n="ui.rcSrcLabel">顔料元</span><div class="subtoggle" style="flex:1">
+      <button id="rcSrcLinked" class="on" data-i18n="ui.rcSrcLinked">混色タブと連動</button><button id="rcSrcOwn" data-i18n="ui.rcSrcOwn">このタブで選ぶ</button>
+     </div></div>
+    <div id="rcOwnPigWrap" style="display:none">
+     <div class="hint" data-i18n="ui.rcSrcOwnHint">チェックした顔料だけを使ってレシピを逆算します(2〜8色)。混色タブの割り当てには一切影響しません。</div>
+     <div id="rcOwnPigList" style="display:flex;flex-wrap:wrap;gap:2px 12px;max-height:160px;overflow-y:auto"></div>
+    </div>
+    <div id="rcOut" class="hint" data-i18n="ui.rcOutDefault">現在の顔料セットで最適な混合比を逆算します</div>
+   </div></details>
+   <details class="sec" open><summary data-i18n="scheme.presetSectionTitle">パレットプリセット</summary><div class="secbody">
+    <div class="row"><select id="scHist" style="flex:1"></select><button id="scHistApply" class="mini" data-i18n="ui.presetLoadBtn" data-i18n-title="ui.presetLoadBtnTitle" title="このプリセット全体を「現在のパレット」へ取り込みます（下の各色をクリックすると、その1色だけを基準色に設定できます）">読込</button></div>
+    <div id="scHistOut" class="row"></div>
+   </div></details>
+   <details class="sec" open><summary data-i18n="sections.paletteManage">パレット管理・書き出し</summary><div class="secbody">
+    <div class="row"><input type="text" id="palName" data-i18n-ph="ui.palNamePh" placeholder="パレット名" style="flex:1"><button id="palAdd" class="mini" data-i18n-title="ui.palAddSelectedTitle" title="選択色を現在のパレットへ追加" data-i18n="ui.palAddSelected">+選択色</button><button id="palSaveBtn" class="mini" data-i18n="ui.palSave2">保存</button></div>
+    <div id="palCur" class="row"></div>
+    <div id="palList"></div>
+    <div class="row"><button id="palExport" class="mini" data-i18n="ui.palExport">JSON書き出し</button>
+     <button id="palImportBtn" class="mini" data-i18n="ui.palImport">JSON読み込み</button>
+     <input type="file" id="palImport" accept=".json" style="display:none"></div>
+   </div></details>
+   <details class="sec" open><summary data-i18n="sections.backup">バックアップ (HTML自己書き出し)</summary><div class="secbody">
+    <div class="hint" data-i18n="ui.backupHint">カスタム顔料・プリセット・パレットを内包した本HTMLファイル自体を再生成してダウンロードします（過去の埋め込みデータは自動クリーンアップ）。</div>
+    <div class="row"><button id="selfExport" data-i18n="ui.backupBtn">このHTMLをデータ込みで書き出し</button></div>
+   </div></details>
+  </div>
+
+  <!-- ============ ガマットタブ (F12/F15) ============ -->
+  <div class="tabpage" id="tab-gamut">
+   <details class="sec" open><summary data-help="gamut" data-i18n="sections.gamut">カラーガマットマスク (Gurney式)</summary><div class="secbody">
+    <!-- §VII-6: gamutスライスのみを初期値へ戻す。Undo対象(gamutはUNDO_KEYSに含まれる)のため確認ダイアログは不要。 -->
+    <div class="row" style="justify-content:flex-end"><button id="gmResetAll" class="mini" data-i18n="gamut.resetBtn" data-i18n-title="gamut.resetBtnTitle" title="ガマット設定だけを初期状態へ戻します（Ctrl+Zで戻せます）">ガマットをリセット</button></div>
+    <div class="row"><span class="lbl" data-i18n="ui.gmMode">モード</span><div class="subtoggle" style="flex:1">
+      <button id="gmModeOff" class="on" data-i18n="ui.gmModeOff">オフ</button><button id="gmModeHl" data-i18n="ui.gmModeHl">マスク外を減光して確認</button><button id="gmModeCr" data-i18n="ui.gmModeCr">マスク外の色をマスク内へ補正</button>
+     </div></div>
+    <div class="hint" id="gmModeHint" style="display:none"></div>
+    <div class="row" style="justify-content:flex-end"><label><input type="checkbox" id="gmShowTicks"> <span data-i18n="ui.gmShowTicks">目盛を表示</span></label></div>
+    <div id="gmWheelWrap" style="text-align:center"><canvas id="gmWheel" class="wheel" width="252" height="252"></canvas></div>
+    <!-- WS-16 S7-2(Sonnet実装): マスク生成の入口(プリセット+自分で描く+画像書き出し)を
+         色相環のすぐ下へ配置する。旧レイアウトは折りたたみ済みの別セクション最下部にあり、
+         色相環をクリックしても頂点が置けない(WS-16 G-1)ことと相まって、初見のユーザーが
+         マスクを作る手段そのものに到達できなかった。プリセットは廃止せず(Gurney式の定型形は
+         初学者の入口として残す)、自由描画も両立させる(WS-16作業標準書 §S7-1裁定)。 -->
+    <div class="hint" style="font-weight:600" data-i18n="gamut.startHere">① マスクを作る</div>
+    <div class="row" style="flex-wrap:wrap;gap:4px">
+     <button id="gmPresTriad" class="mini" data-i18n="ui.gmPresTriad">三角(トライアド)</button>
+     <button id="gmPresThin" class="mini" data-i18n="ui.gmPresThin">細長三角</button>
+     <button id="gmPresY" class="mini" data-i18n="ui.gmPresY">Y字</button>
+     <button id="gmPresTrap" class="mini" data-i18n="ui.gmPresTrap">台形</button>
+     <button id="gmPresTetra" class="mini" data-i18n="ui.gmPresTetra">四角(テトラード)</button>
+     <button id="gmAddCircle" class="mini" data-i18n="ui.gmAddCircle">○ 円形を追加</button>
+     <button id="gmDrawNew" class="mini" data-i18n="gamut.drawNewBtn">✎ 自分で描く</button>
+    </div>
+    <div class="hint" data-i18n="ui.gmPresetAddHint">マスクが3個未満なら新規マスクとして追加され、3個ある場合は選択中マスクを置き換えます。</div>
+    <div class="hint" data-i18n="ui.gmPresetHint">プリセットは押し直しで形だけリセットし、現在の回転(rot)は保持します。</div>
+    <!-- WS-16 S7-5: exportGamutImage()自体は実装済み(範囲外を薄く出力する処理も含む)。
+         押せなかった理由は①折りたたみの奥にあった②マスクが作れずdisabledのままだった、の2点
+         (WS-16 G-2)。ここでは移設とtitle文言の改善のみ行い、書き出しロジックには一切触れない。 -->
+    <div class="row"><button id="gmExportImg" class="mini" disabled data-i18n="gamut.exportImgBtn" title="マスクが未成立です(頂点3個以上が必要)">ガマットを画像として書き出し</button></div>
+    <!-- WS-16 S7-3: マスクが1個も無い状態でのクリックで頂点を置き始められないデッドロック
+         (WS-16 G-1)の直接修正。キャンバス上の案内文(gamut.noMasksHint)は既に「クリックして
+         頂点を置いてください」と約束しているため、その約束を守る側で修正する。 -->
+    <div id="gmMaskList" style="display:flex;flex-direction:column;gap:2px;margin:4px 0"></div>
+    <div class="hint" data-i18n="ui.gmClickHint">選択中マスクが未成立(頂点3個未満)のときはホイール内をクリックするだけで頂点を追加できます(3点で有効化)。頂点をドラッグで移動(色相・彩度)。3頂点以上になったら、辺をダブルクリックで頂点追加、頂点のダブルクリックで削除(3頂点未満にはできません)。外周付近のドラッグで多角形全体を回転します。他のマスクの内側をクリックするとそのマスクを選択できます。</div>
+    <div class="row" id="gmRotRow"><span class="lbl" data-i18n="ui.gmRotate">回転(選択中マスク)</span><input type="range" id="gmRot" min="-180" max="180" step="1" value="0"><span class="num" id="vgmRot">0°</span>
+     <button id="gmRotM15" class="mini" data-i18n="ui.gmRotM15">−15°</button><button id="gmRotP15" class="mini" data-i18n="ui.gmRotP15">+15°</button></div>
+    <div class="row"><span class="lbl" data-i18n="ui.gmFeather">フェザー</span><input type="range" id="gmSoft" min="0.01" max="0.3" step="0.005" value="0.08"><span class="num" id="vgmSoft">0.08</span></div>
+    <div class="row"><span class="lbl" data-i18n="ui.gmDimHighlight">減光(ハイライト時)</span><input type="range" id="gmDim" min="0" max="1" step="0.01" value="0.35"><span class="num" id="vgmDim">35%</span></div>
+    <div class="hint" id="gmExportWarn" style="display:none;color:var(--warn)" data-i18n="ui.gmExportWarn">⚠ ガマット表示/補正は書き出しにも反映されます</div>
+   </div></details>
+   <details class="sec"><summary data-help="gamutPreset" data-i18n="sections.gamutPresetSec">詳細: 逆算・彩度上限</summary><div class="secbody">
+    <div class="row"><span class="lbl" data-i18n="ui.gmSatLimit">彩度上限(選択中マスク)</span><input type="range" id="gmScale" min="0.2" max="1" step="0.01" value="1"><span class="num" id="vgmScale">100%</span></div>
+    <!-- §VII-5: 「原点を含める」→意味が読める文言へ。VII-1の円盤化で中心/外周の対応が視覚的に
+         わかるようになったため、このヒントの説明力も高まる。 -->
+    <div class="row"><label><input type="checkbox" id="gmHullOrigin" checked> <span data-i18n="ui.gmHullOrigin">無彩色(中心)を含める</span></label></div>
+    <div class="hint" data-i18n="ui.gmHullOriginHint">オン: 灰色〜低彩度をガマットに含めます(ニュートラルを使う前提の配色)。オフ: 画像の有彩色クラスタだけで凸包を作るため、彩度の下限も制限されます。</div>
+    <!-- §VII-4: 抽出実行時のみ使うパラメータであることが伝わるよう、ボタンの直上へ移設しラベルを明確化。 -->
+    <div class="row"><span class="lbl" data-i18n="ui.gmCoverage">カバー率</span><select id="gmCoverage">
+      <option value="0.85">85%</option><option value="0.90">90%</option><option value="0.95" selected>95%</option><option value="0.99">99%</option>
+     </select></div>
+    <div class="hint" data-i18n="ui.gmCoverageHint">画像の色のうち何%がマスク内に入るように抽出するかを決めます。抽出結果には実測のカバー率が表示されます。</div>
+    <div class="row"><button id="gmExtract" class="mini" data-i18n="ui.gmExtractBtn">画像から実効ガマットを抽出</button></div>
+    <div class="row"><button id="gmToPalette" class="mini" data-i18n="ui.gmToPaletteBtn">マスク頂点色を配色タブのパレットへ追加</button></div>
+    <div class="hint" data-i18n="ui.gmExtractHint">逆算はk-means主要色の凸包(Andrewのmonotone chain)を頂点として設定し、以降は通常の編集可能マスクとして扱えます。</div>
+   </div></details>
+  </div>
+
+  </div>
+  <div id="status" data-i18n="status.ready">準備完了</div>
+ </aside>
+</div>
+<div id="dlgSize"><div class="box">
+ <div data-i18n="ui.sizeDlgWarn">画像の長辺が 8192px を超えています。<br>フル解像度のまま扱うとメモリを大量に消費します。</div>
+ <div class="row"><button id="dlgShrink" class="on" data-i18n="ui.sizeDlgShrinkBtn">8192pxへ縮小して読込</button><button id="dlgFull" data-i18n="ui.sizeDlgFullBtn">フル解像度で読込</button></div>
+</div></div>
+<input type="file" id="fileInput" accept="image/*" style="display:none">
+<div id="m3dModal"><div class="box">
+ <div class="hd"><b data-i18n="ui.munsell3dModalTitle">マンセル3D色立体</b><button id="m3dModalClose" class="mini">✕ <span data-i18n="ui.commonClose">閉じる</span></button></div>
+ <div id="m3dModalBody"></div>
+</div></div>
+<div id="shortcutModal"><div class="box">
+ <div class="hd"><b data-i18n="ui.shortcutModalTitle">キーボードショートカット</b><button id="shortcutModalClose" class="mini">✕ <span data-i18n="ui.commonClose">閉じる</span></button></div>
+ <div id="shortcutModalBody"></div>
+</div></div>
+<div id="hpPop"></div>
+<div id="resetConfirm" class="confirmModal"><div class="box">
+ <div><b data-i18n="ui.resetConfirmTitle">すべての変更をリセットしますか？</b></div>
+ <div class="hint"><span data-i18n="ui.resetConfirmHint1">明度・彩度・レベル補正・トリミング・混色・ヒューワープなど、この画像に対して行った編集内容がすべて初期状態に戻ります。</span> <b data-i18n="ui.resetConfirmUndoWarn">この操作は取り消せません。</b><span data-i18n="ui.resetConfirmHint2">すべての編集・トリミング・戻る履歴が消去されます。</span></div>
+ <div class="row"><button id="resetCancel" data-i18n="ui.commonCancel">キャンセル</button><button id="resetGo" class="on" data-i18n="ui.resetConfirmBtn">リセットする</button></div>
+</div></div>
+<!-- §VI-4: 保存パレット全体の削除(不可逆・複数色)には確認ダイアログを追加する(三大原則3)。
+     resetConfirmと同じ.confirmModalパターンを再利用し、文言だけ動的に差し替える。 -->
+<div id="palDelConfirm" class="confirmModal"><div class="box">
+ <div><b id="palDelConfirmTitle" data-i18n="ui.palDelConfirmTitleDefault">このパレットを削除しますか？</b></div>
+ <div class="hint"><b data-i18n="ui.palDelConfirmUndoWarn">この操作は取り消せません。</b><span data-i18n="ui.palDelConfirmHint">パレット内のすべての色が失われます。</span></div>
+ <div class="row"><button id="palDelCancel" data-i18n="ui.commonCancel">キャンセル</button><button id="palDelGo" class="on" data-i18n="ui.palDelConfirmBtn">削除する</button></div>
+</div></div>
+<script type="application/json" id="clab-userdata">null</script>
+<script type="module">
